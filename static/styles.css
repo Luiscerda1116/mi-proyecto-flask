@@ -1,0 +1,123 @@
+/* Estilos personalizados para el proyecto Flask */
+
+/* Gradiente para el jumbotron */
+.jumbotron {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.bg-gradient {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* Efectos hover para tarjetas */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Animaciones suaves */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Estilos para botones */
+.btn {
+    transition: all 0.3s ease;
+    border-radius: 25px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Navbar personalizada */
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #ffd700 !important;
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+}
+
+/* Barras de progreso animadas */
+.progress {
+    height: 8px;
+    border-radius: 10px;
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    border-radius: 10px;
+    transition: width 1s ease-in-out;
+}
+
+/* Estilo para badges */
+.badge {
+    font-size: 0.75rem;
+    padding: 0.5em 0.8em;
+    border-radius: 15px;
+}
+
+/* Espaciado personalizado */
+.section-padding {
+    padding: 60px 0;
+}
+
+/* Colores personalizados */
+.text-custom-primary { color: #667eea; }
+.text-custom-secondary { color: #764ba2; }
+.bg-custom-primary { background-color: #667eea; }
+.bg-custom-secondary { background-color: #764ba2; }
+
+/* Responsive ajustments */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Iconos alternativos usando símbolos Unicode y CSS */
+.icon-home::before { content: "🏠"; }
+.icon-user::before { content: "👤"; }
+.icon-projects::before { content: "📁"; }
+.icon-code::before { content: "💻"; }
+.icon-check::before { content: "✅"; }
+.icon-github::before { content: "⚡"; }
+.icon-email::before { content: "📧"; }
+.icon-linkedin::before { content: "💼"; }
+
+/* Alternativa con símbolos CSS */
+.custom-icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    margin-right: 0.5em;
+    font-style: normal;
+}

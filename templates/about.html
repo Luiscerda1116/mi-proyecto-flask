@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block title %}Acerca de - Mi Proyecto Flask{% endblock %}
+
+{% block content %}
+<!-- Header de la página -->
+<div class="text-center mb-5">
+    <h1 class="display-4 text-primary mb-3">
+        <i class="bi bi-person-circle"></i>
+        Acerca de Mí
+    </h1>
+    <p class="lead">Conoce más sobre el desarrollador de este proyecto</p>
+</div>
+
+<div class="row">
+    <!-- Información personal -->
+    <div class="col-lg-4 mb-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body text-center">
+                <!-- Avatar placeholder -->
+                <div class="mb-3">
+                    <i class="bi bi-person-circle display-1 text-primary"></i>
+                </div>
+                <h3 class="card-title text-primary">{{ developer.name }}</h3>
+                <p class="text-muted mb-2">{{ developer.career }}</p>
+                <p class="text-muted">{{ developer.university }}</p>
+                
+                <!-- Enlaces sociales -->
+                <div class="mt-3">
+                    <a href="#" class="btn btn-outline-primary btn-sm me-2">
+                        <i class="bi bi-github"></i> GitHub
+                    </a>
+                    <a href="#" class="btn btn-outline-info btn-sm me-2">
+                        <i class="bi bi-linkedin"></i> LinkedIn
+                    </a>
+                    <a href="#" class="btn btn-outline-success btn-sm">
+                        <i class="bi bi-envelope"></i> Email
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Información detallada -->
+    <div class="col-lg-8">
+        <!-- Sobre mí -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title mb-0">
+                    <i class="bi bi-info-circle"></i>
+                    Sobre Mí
+                </h4>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Soy estudiante de {{ developer.career }} en {{ developer.university }}. 
+                    Me apasiona el desarrollo web y estoy constantemente aprendiendo nuevas 
+                    tecnologías para mejorar mis habilidades de programación.
+                </p>
+                <p class="card-text">
+                    Este proyecto forma parte de mi aprendizaje en el desarrollo web con 
+                    Python y Flask. Me enfoco en crear aplicaciones funcionales y bien 
+                    estructuradas, aplicando las mejores prácticas de desarrollo.
+                </p>
+                <p class="card-text">
+                    Mi objetivo es convertirme en un desarrollador full-stack competente, 
+                    con sólidos conocimientos tanto en frontend como en backend.
+                </p>
+            </div>
+        </div>
+        
+        <!-- Habilidades -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-success text-white">
+                <h4 class="card-title mb-0">
+                    <i class="bi bi-code-slash"></i>
+                    Habilidades Técnicas
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for skill in developer.skills %}
+                    <div class="col-md-4 col-sm-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            <span class="skill-item">{{ skill }}</span>
+                        </div>
+                        <!-- Barra de progreso simple -->
+                        <div class="progress mt-1" style="height: 5px;">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ range(70, 95) | random }}%">
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Educación y experiencia -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-mortarboard"></i>
+                            Educación
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="timeline-item">
+                            <h6 class="text-primary">{{ developer.career }}</h6>
+                            <p class="text-muted mb-1">{{ developer.university }}</p>
+                            <small class="text-muted">2022 - Presente</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-briefcase"></i>
+                            Objetivos
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-2">
+                                <i class="bi bi-arrow-right text-warning"></i>
+                                Dominar el desarrollo web full-stack
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-arrow-right text-warning"></i>
+                                Aprender frameworks modernos
+                            </li>
+                            <li class="mb-2">
+                                <i class="bi bi-arrow-right text-warning"></i>
+                                Contribuir a proyectos open source
+                            </li>
+                            <li class="mb-0">
+                                <i class="bi bi-arrow-right text-warning"></i>
+                                Obtener experiencia profesional
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Proyectos recientes -->
+<div class="mt-5">
+    <h2 class="text-center mb-4">
+        <i class="bi bi-laptop text-primary"></i>
+        Lo que Estoy Aprendiendo
+    </h2>
+    
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 bg-light">
+                <div class="card-body text-center">
+                    <i class="bi bi-server display-4 text-primary"></i>
+                    <h5 class="card-title mt-3">Backend Development</h5>
+                    <p class="card-text small">
+                        Flask, Django, APIs REST, bases de datos
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 bg-light">
+                <div class="card-body text-center">
+                    <i class="bi bi-palette display-4 text-success"></i>
+                    <h5 class="card-title mt-3">Frontend Development</h5>
+                    <p class="card-text small">
+                        HTML, CSS, JavaScript, frameworks modernos
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="card border-0 bg-light">
+                <div class="card-body text-center">
+                    <i class="bi bi-cloud display-4 text-info"></i>
+                    <h5 class="card-title mt-3">DevOps & Deployment</h5>
+                    <p class="card-text small">
+                        Git, GitHub, Docker, despliegue en la nube
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to action -->
+<div class="text-center mt-5">
+    <div class="card border-0 bg-primary text-white">
+        <div class="card-body py-4">
+            <h4>¿Quieres colaborar en un proyecto?</h4>
+            <p class="mb-3">
+                Siempre estoy abierto a nuevas oportunidades de aprendizaje y colaboración
+            </p>
+            <div>
+                <a href="{{ url_for('projects') }}" class="btn btn-light me-3">
+                    <i class="bi bi-folder"></i>
+                    Ver mis proyectos
+                </a>
+                <a href="#" class="btn btn-outline-light">
+                    <i class="bi bi-envelope"></i>
+                    Contactar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Animación para las barras de progreso de habilidades
+    document.addEventListener('DOMContentLoaded', function() {
+        const progressBars = document.querySelectorAll('.progress-bar');
+        
+        // Animar las barras de progreso cuando se cargan
+        progressBars.forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            bar.style.transition = 'width 1s ease-in-out';
+            
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 500);
+        });
+        
+        // Efecto hover en las tarjetas de habilidades
+        const skillItems = document.querySelectorAll('.skill-item');
+        skillItems.forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.fontWeight = 'bold';
+                this.style.color = '#198754';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.fontWeight = 'normal';
+                this.style.color = 'initial';
+            });
+        });
+    });
+</script>
+{% endblock %}

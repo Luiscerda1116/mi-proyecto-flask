@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Mi Proyecto Flask{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="jumbotron bg-gradient text-center py-5 mb-5 rounded">
+    <div class="container">
+        <h1 class="display-4 text-primary">
+            ¡Bienvenido, {{ user_name }}!
+        </h1>
+        <p class="lead">
+            Este es tu proyecto Flask con plantillas dinámicas usando Jinja2
+        </p>
+        <hr class="my-4">
+        <p>
+            Explora las diferentes secciones para conocer más sobre el proyecto
+        </p>
+        <a class="btn btn-primary btn-lg" href="{{ url_for('about') }}" role="button">
+            <i class="bi bi-person-fill"></i> Conoce más sobre mí
+        </a>
+    </div>
+</div>
+
+<!-- Información del proyecto -->
+<div class="row">
+    <div class="col-lg-8">
+        <h2 class="mb-4">
+            <i class="bi bi-info-circle-fill text-primary"></i>
+            Sobre este Proyecto
+        </h2>
+        <p class="lead">
+            Este proyecto demuestra el uso de Flask con plantillas Jinja2 para crear 
+            aplicaciones web dinámicas y bien estructuradas.
+        </p>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">
+                            <i class="bi bi-code-square"></i>
+                            Flask Framework
+                        </h5>
+                        <p class="card-text">
+                            Utilizamos Flask como framework principal para el desarrollo 
+                            de la aplicación web.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title text-success">
+                            <i class="bi bi-file-earmark-code"></i>
+                            Plantillas Jinja2
+                        </h5>
+                        <p class="card-text">
+                            Implementamos herencia de plantillas y contenido dinámico 
+                            con Jinja2.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-list-check"></i>
+                    Características
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        Herencia de plantillas
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        Contenido dinámico
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        Diseño responsivo
+                    </li>
+                    <li class="mb-2">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        Navegación intuitiva
+                    </li>
+                    <li class="mb-0">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        Integración con GitHub
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Proyectos destacados -->
+{% if projects %}
+<div class="mt-5">
+    <h2 class="mb-4">
+        <i class="bi bi-folder-fill text-warning"></i>
+        Proyectos Destacados
+    </h2>
+    <div class="row">
+        {% for project in projects %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-primary">{{ project.name }}</h5>
+                    <p class="card-text">{{ project.description }}</p>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <small class="text-muted">
+                        <i class="bi bi-clock"></i>
+                        Proyecto {{ loop.index }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Estadísticas -->
+<div class="row mt-5">
+    <div class="col-md-3 col-sm-6 mb-4">
+        <div class="card text-center border-0 bg-primary text-white">
+            <div class="card-body">
+                <i class="bi bi-code-slash display-4"></i>
+                <h3 class="mt-2">{{ projects|length }}</h3>
+                <p class="card-text">Proyectos</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-4">
+        <div class="card text-center border-0 bg-success text-white">
+            <div class="card-body">
+                <i class="bi bi-file-earmark-code display-4"></i>
+                <h3 class="mt-2">3</h3>
+                <p class="card-text">Plantillas</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-4">
+        <div class="card text-center border-0 bg-info text-white">
+            <div class="card-body">
+                <i class="bi bi-bootstrap display-4"></i>
+                <h3 class="mt-2">1</h3>
+                <p class="card-text">Framework</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 mb-4">
+        <div class="card text-center border-0 bg-warning text-white">
+            <div class="card-body">
+                <i class="bi bi-github display-4"></i>
+                <h3 class="mt-2">1</h3>
+                <p class="card-text">Repositorio</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
