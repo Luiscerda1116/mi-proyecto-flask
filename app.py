@@ -34,6 +34,9 @@ def about():
 def page_not_found(error):
     return render_template('404.html'), 404
 
+# Configuración para ejecutar la aplicación
 if __name__ == '__main__':
-    # Ejecutar la aplicación en modo debug
-    app.run(debug=True)
+    import os
+    # Configuración para Render y desarrollo local
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)  # ← Cambiar a debug=False
