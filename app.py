@@ -195,5 +195,9 @@ if __name__ == '__main__':
         except Exception as e:
             print(f"❌ Error al inicializar la base de datos: {e}")
     
+    # Configuración para producción en Render
+    import os
+    port = int(os.environ.get('PORT', 5000))
+    
     print("🚀 Iniciando aplicación Flask...")
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=port, debug=False)
