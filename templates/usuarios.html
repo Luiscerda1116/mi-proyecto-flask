@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuarios - Sistema MySQL</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .nav {
+            background-color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .nav a {
+            color: #667eea;
+            text-decoration: none;
+            margin-right: 20px;
+            font-weight: bold;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .nav a:hover {
+            background-color: #667eea;
+            color: white;
+        }
+        
+        .card {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background-color: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #5a67d8;
+        }
+        
+        .btn-success {
+            background-color: #48bb78;
+        }
+        
+        .btn-success:hover {
+            background-color: #38a169;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #667eea;
+            color: white;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>👥 Gestión de Usuarios</h1>
+        <p>Lista completa de usuarios registrados</p>
+    </div>
+    
+    <div class="nav">
+        <a href="/">🏠 Inicio</a>
+        <a href="/usuarios">👥 Usuarios</a>
+        <a href="/nuevo_usuario">➕ Nuevo Usuario</a>
+        <a href="/test_db">🔧 Test DB</a>
+        <a href="/api/usuarios">📊 API Usuarios</a>
+    </div>
+    
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2>Lista de Usuarios</h2>
+            <a href="/nuevo_usuario" class="btn btn-success">➕ Agregar Usuario</a>
+        </div>
+        
+        {% if usuarios %}
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr>
+                    <td>{{ usuario[0] }}</td>
+                    <td>{{ usuario[1] }}</td>
+                    <td>{{ usuario[2] }}</td>
+                    <td>
+                        <a href="#" class="btn" style="background-color: #ed8936;">✏️ Editar</a>
+                        <a href="#" class="btn" style="background-color: #e53e3e;">🗑️ Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div style="text-align: center; padding: 40px;">
+            <h3>😔 No hay usuarios registrados</h3>
+            <p>¡Agrega el primer usuario!</p>
+            <a href="/nuevo_usuario" class="btn btn-success">➕ Crear Primer Usuario</a>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="card">
+        <h3>📊 Estadísticas</h3>
+        <p><strong>Total de usuarios:</strong> {{ usuarios|length if usuarios else 0 }}</p>
+        <p><strong>Última actualización:</strong> {{ moment().format('YYYY-MM-DD HH:mm:ss') if moment else 'Ahora' }}</p>
+    </div>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión</title>
+    <title>Nuevo Usuario - Sistema MySQL</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -78,23 +78,6 @@
             background-color: #38a169;
         }
         
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        th {
-            background-color: #667eea;
-            color: white;
-        }
-        
         .form-group {
             margin-bottom: 15px;
         }
@@ -111,6 +94,13 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             box-sizing: border-box;
+            font-size: 16px;
+        }
+        
+        input[type="text"]:focus, input[type="email"]:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
         }
         
         .alert {
@@ -133,10 +123,9 @@
     </style>
 </head>
 <body>
-    <!-- PÁGINA PRINCIPAL - index.html -->
     <div class="header">
-        <h1>🚀 Sistema de Gestión MySQL</h1>
-        <p>Aplicación Flask con Base de Datos MySQL</p>
+        <h1>➕ Nuevo Usuario</h1>
+        <p>Agregar un nuevo usuario al sistema</p>
     </div>
     
     <div class="nav">
@@ -147,30 +136,72 @@
         <a href="/api/usuarios">📊 API Usuarios</a>
     </div>
     
+    <!-- Mensajes Flash -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success">
+                    ✅ {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
     <div class="card">
-        <h2>¡Bienvenido al Sistema!</h2>
-        <p>Esta aplicación demuestra la integración entre Flask y MySQL.</p>
+        <h2>📋 Formulario de Usuario</h2>
+        <p>Completa todos los campos para registrar un nuevo usuario.</p>
         
-        <h3>📋 Características:</h3>
-        <ul>
-            <li>✅ Conexión a MySQL configurada</li>
-            <li>✅ CRUD de usuarios completo</li>
-            <li>✅ API REST endpoints</li>
-            <li>✅ Templates HTML responsivos</li>
-            <li>✅ Prueba de conexión a BD</li>
-        </ul>
-        
-        <h3>🛠️ Acciones rápidas:</h3>
-        <a href="/usuarios" class="btn">Ver Usuarios</a>
-        <a href="/nuevo_usuario" class="btn btn-success">Crear Usuario</a>
-        <a href="/test_db" class="btn">Probar Conexión</a>
+        <form method="POST" action="/nuevo_usuario">
+            <div class="form-group">
+                <label for="nombre">👤 Nombre Completo:</label>
+                <input type="text" id="nombre" name="nombre" required 
+                       placeholder="Ej: Juan Pérez" maxlength="100">
+            </div>
+            
+            <div class="form-group">
+                <label for="email">📧 Correo Electrónico:</label>
+                <input type="email" id="email" name="email" required 
+                       placeholder="Ej: juan@email.com" maxlength="100">
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <button type="submit" class="btn btn-success">💾 Guardar Usuario</button>
+                <a href="/usuarios" class="btn">❌ Cancelar</a>
+            </div>
+        </form>
     </div>
     
     <div class="card">
-        <h3>📊 Estado del Sistema</h3>
-        <p><strong>Base de Datos:</strong> MySQL conectada ✅</p>
-        <p><strong>Framework:</strong> Flask 🐍</p>
-        <p><strong>Estado:</strong> Funcionando correctamente 🚀</p>
+        <h3>📝 Instrucciones</h3>
+        <ul>
+            <li><strong>Nombre:</strong> Debe tener máximo 100 caracteres</li>
+            <li><strong>Email:</strong> Debe ser un correo válido y único</li>
+            <li><strong>Campos obligatorios:</strong> Todos los campos son requeridos</li>
+        </ul>
     </div>
+    
+    <script>
+        // Validación en tiempo real
+        document.getElementById('email').addEventListener('input', function(e) {
+            const email = e.target.value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (email && !emailRegex.test(email)) {
+                e.target.style.borderColor = '#e53e3e';
+            } else {
+                e.target.style.borderColor = '#48bb78';
+            }
+        });
+        
+        // Confirmación antes de enviar
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const nombre = document.getElementById('nombre').value;
+            const email = document.getElementById('email').value;
+            
+            if (!confirm(`¿Confirmas crear el usuario?\n\nNombre: ${nombre}\nEmail: ${email}`)) {
+                e.preventDefault();
+            }
+        });
+    </script>
 </body>
 </html>

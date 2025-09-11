@@ -1,203 +1,144 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
+import sys
 import os
-import json
-import csv
-from datetime import datetime
+
+# Agregar la carpeta Conexion al path para importar el módulo
+sys.path.append(os.path.join(os.path.dirname(__file__), 'Conexion'))
+
+try:
+    from conexion import db
+except ImportError:
+    print("Error: No se pudo importar el módulo de conexión")
+    db = None
 
 app = Flask(__name__)
+app.secret_key = 'tu_clave_secreta_aqui'  # Cambia por una clave segura
 
-# Configuración de la base de datos SQLite (en el directorio raíz)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///usuarios.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Inicializar SQLAlchemy
-db = SQLAlchemy(app)
-
-# Modelo de base de datos
-class Usuario(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    nombre = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), nullable=False)
-    mensaje = db.Column(db.Text, nullable=True)
-    fecha_registro = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'nombre': self.nombre,
-            'email': self.email,
-            'mensaje': self.mensaje,
-            'fecha_registro': self.fecha_registro.strftime('%Y-%m-%d %H:%M:%S')
-        }
-
+# Ruta principal
 @app.route('/')
 def index():
+    """Página principal del proyecto"""
     return render_template('index.html')
 
-@app.route('/formulario')
-def formulario():
-    return render_template('formulario.html')
-
-@app.route('/procesar_formulario', methods=['POST'])
-def procesar_formulario():
-    nombre = request.form['nombre']
-    email = request.form['email']
-    mensaje = request.form.get('mensaje', '')
+# Ruta para probar la conexión a MySQL (requerida por la tarea)
+@app.route('/test_db')
+def test_database():
+    """Prueba la conexión con MySQL"""
+    if db is None:
+        return "Error: Módulo de conexión no disponible"
     
-    # Crear directorio datos si no existe
-    os.makedirs('datos', exist_ok=True)
-    
-    # Guardar en archivo TXT
-    guardar_txt(nombre, email, mensaje)
-    
-    # Guardar en archivo JSON
-    guardar_json(nombre, email, mensaje)
-    
-    # Guardar en archivo CSV
-    guardar_csv(nombre, email, mensaje)
-    
-    # Guardar en SQLite
-    guardar_sqlite(nombre, email, mensaje)
-    
-    return render_template('resultado.html', nombre=nombre, email=email, mensaje=mensaje)
+    result = db.test_connection()
+    return f"<h1>Prueba de Conexión MySQL</h1><p>{result}</p>"
 
-# Funciones para manejar archivos TXT
-def guardar_txt(nombre, email, mensaje):
-    with open('datos/datos.txt', 'a', encoding='utf-8') as file:
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        file.write(f"Fecha: {timestamp}\n")
-        file.write(f"Nombre: {nombre}\n")
-        file.write(f"Email: {email}\n")
-        file.write(f"Mensaje: {mensaje}\n")
-        file.write("-" * 50 + "\n")
-
-@app.route('/datos_txt')
-def mostrar_datos_txt():
-    try:
-        with open('datos/datos.txt', 'r', encoding='utf-8') as file:
-            contenido = file.read()
-        return f"<pre>{contenido}</pre>"
-    except FileNotFoundError:
-        return "No se encontraron datos en archivo TXT"
-
-# Funciones para manejar archivos JSON
-def guardar_json(nombre, email, mensaje):
-    datos = {
-        'fecha': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'nombre': nombre,
-        'email': email,
-        'mensaje': mensaje
-    }
-    
-    # Leer datos existentes
-    try:
-        with open('datos/datos.json', 'r', encoding='utf-8') as file:
-            lista_datos = json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
-        lista_datos = []
-    
-    # Agregar nuevos datos
-    lista_datos.append(datos)
-    
-    # Guardar datos actualizados
-    with open('datos/datos.json', 'w', encoding='utf-8') as file:
-        json.dump(lista_datos, file, indent=2, ensure_ascii=False)
-
-@app.route('/datos_json')
-def mostrar_datos_json():
-    try:
-        with open('datos/datos.json', 'r', encoding='utf-8') as file:
-            datos = json.load(file)
-        return jsonify(datos)
-    except FileNotFoundError:
-        return jsonify({"error": "No se encontraron datos en archivo JSON"})
-
-# Funciones para manejar archivos CSV
-def guardar_csv(nombre, email, mensaje):
-    archivo_existe = os.path.exists('datos/datos.csv')
-    
-    with open('datos/datos.csv', 'a', newline='', encoding='utf-8') as file:
-        writer = csv.writer(file)
-        
-        # Escribir encabezados si el archivo es nuevo
-        if not archivo_existe:
-            writer.writerow(['Fecha', 'Nombre', 'Email', 'Mensaje'])
-        
-        # Escribir datos
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        writer.writerow([timestamp, nombre, email, mensaje])
-
-@app.route('/datos_csv')
-def mostrar_datos_csv():
-    try:
-        datos = []
-        with open('datos/datos.csv', 'r', encoding='utf-8') as file:
-            reader = csv.DictReader(file)
-            for row in reader:
-                datos.append(row)
-        return jsonify(datos)
-    except FileNotFoundError:
-        return jsonify({"error": "No se encontraron datos en archivo CSV"})
-
-# Funciones para manejar SQLite
-def guardar_sqlite(nombre, email, mensaje):
-    try:
-        nuevo_usuario = Usuario(nombre=nombre, email=email, mensaje=mensaje)
-        db.session.add(nuevo_usuario)
-        db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        print(f"Error al guardar en SQLite: {e}")
-
-@app.route('/datos_sqlite')
-def mostrar_datos_sqlite():
-    try:
-        usuarios = Usuario.query.all()
-        datos = [usuario.to_dict() for usuario in usuarios]
-        return jsonify(datos)
-    except Exception as e:
-        return jsonify({"error": f"Error al acceder a la base de datos: {str(e)}"})
-
+# Rutas para gestión de usuarios
 @app.route('/usuarios')
 def listar_usuarios():
-    try:
-        usuarios = Usuario.query.all()
-        return render_template('usuarios.html', usuarios=usuarios)
-    except Exception as e:
-        return f"Error al acceder a la base de datos: {str(e)}"
+    """Muestra todos los usuarios"""
+    if db is None:
+        return "Error: Base de datos no disponible"
+    
+    usuarios = db.fetch_query("SELECT * FROM usuarios WHERE activo = TRUE ORDER BY fecha_registro DESC")
+    
+    if usuarios is None:
+        flash('Error al obtener usuarios', 'error')
+        return redirect(url_for('index'))
+    
+    return render_template('usuarios.html', usuarios=usuarios)
 
-@app.route('/usuario/<int:id>')
-def mostrar_usuario(id):
-    try:
-        usuario = Usuario.query.get_or_404(id)
-        return render_template('usuario_detalle.html', usuario=usuario)
-    except Exception as e:
-        return f"Error al acceder a la base de datos: {str(e)}"
+@app.route('/usuarios/nuevo', methods=['GET', 'POST'])
+def nuevo_usuario():
+    """Crear un nuevo usuario"""
+    if request.method == 'POST':
+        nombre = request.form.get('nombre')
+        email = request.form.get('email')
+        
+        if not nombre or not email:
+            flash('Nombre y email son obligatorios', 'error')
+            return render_template('nuevo_usuario.html')
+        
+        # Insertar usuario en la base de datos
+        query = "INSERT INTO usuarios (nombre, email) VALUES (%s, %s)"
+        if db.execute_query(query, (nombre, email)):
+            flash('Usuario creado exitosamente', 'success')
+            return redirect(url_for('listar_usuarios'))
+        else:
+            flash('Error al crear usuario', 'error')
+    
+    return render_template('nuevo_usuario.html')
 
-@app.route('/eliminar_usuario/<int:id>', methods=['POST'])
-def eliminar_usuario(id):
-    try:
-        usuario = Usuario.query.get_or_404(id)
-        db.session.delete(usuario)
-        db.session.commit()
-        return redirect(url_for('listar_usuarios'))
-    except Exception as e:
-        db.session.rollback()
-        return f"Error al eliminar usuario: {str(e)}"
+# Rutas para productos (ejemplo adicional)
+@app.route('/productos')
+def listar_productos():
+    """Muestra todos los productos con sus categorías"""
+    if db is None:
+        return "Error: Base de datos no disponible"
+    
+    query = """
+    SELECT p.*, c.nombre_categoria 
+    FROM productos p 
+    LEFT JOIN categorias c ON p.id_categoria = c.id_categoria 
+    ORDER BY p.fecha_creacion DESC
+    """
+    productos = db.fetch_query(query)
+    
+    if productos is None:
+        flash('Error al obtener productos', 'error')
+        return redirect(url_for('index'))
+    
+    return render_template('productos.html', productos=productos)
+
+# API endpoints
+@app.route('/api/usuarios')
+def api_usuarios():
+    """API para obtener usuarios en formato JSON"""
+    usuarios = db.fetch_query("SELECT id_usuario, nombre, email FROM usuarios WHERE activo = TRUE")
+    return jsonify(usuarios if usuarios else [])
+
+@app.route('/api/productos')
+def api_productos():
+    """API para obtener productos en formato JSON"""
+    productos = db.fetch_query("SELECT * FROM productos")
+    return jsonify(productos if productos else [])
+
+# Ruta para estadísticas
+@app.route('/estadisticas')
+def estadisticas():
+    """Muestra estadísticas del sistema"""
+    if db is None:
+        return "Error: Base de datos no disponible"
+    
+    stats = {}
+    
+    # Contar usuarios
+    result = db.fetch_query("SELECT COUNT(*) as total FROM usuarios WHERE activo = TRUE")
+    stats['usuarios'] = result[0]['total'] if result else 0
+    
+    # Contar productos
+    result = db.fetch_query("SELECT COUNT(*) as total FROM productos")
+    stats['productos'] = result[0]['total'] if result else 0
+    
+    # Contar categorías
+    result = db.fetch_query("SELECT COUNT(*) as total FROM categorias")
+    stats['categorias'] = result[0]['total'] if result else 0
+    
+    return render_template('estadisticas.html', stats=stats)
+
+# Manejo de errores
+@app.errorhandler(404)
+def not_found(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template('500.html'), 500
 
 if __name__ == '__main__':
-    # Crear las tablas al iniciar la aplicación (dentro del contexto de la app)
-    with app.app_context():
-        try:
-            db.create_all()
-            print("✅ Base de datos inicializada correctamente")
-        except Exception as e:
-            print(f"❌ Error al inicializar la base de datos: {e}")
+    print("Iniciando aplicación Flask con MySQL...")
+    print("Rutas disponibles:")
+    print("- http://localhost:5000/ (Página principal)")
+    print("- http://localhost:5000/test_db (Prueba de conexión)")
+    print("- http://localhost:5000/usuarios (Lista de usuarios)")
+    print("- http://localhost:5000/productos (Lista de productos)")
+    print("- http://localhost:5000/estadisticas (Estadísticas)")
     
-    # Configuración para producción en Render
-    import os
-    port = int(os.environ.get('PORT', 5000))
-    
-    print("🚀 Iniciando aplicación Flask...")
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(debug=True, port=5000)
