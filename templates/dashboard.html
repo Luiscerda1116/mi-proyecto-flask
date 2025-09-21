@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Mi Proyecto Flask{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2">
+                <i class="fas fa-tachometer-alt text-primary"></i> Dashboard
+            </h1>
+            <div class="text-muted">
+                <i class="fas fa-clock"></i> 
+                Última conexión: <span id="currentTime"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-circle"></i> Bienvenido, {{ user.nombre }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Has iniciado sesión correctamente en tu cuenta. Desde aquí puedes 
+                    acceder a todas las funcionalidades del sistema.
+                </p>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="d-grid">
+                            <a href="{{ url_for('profile') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-user"></i> Ver mi Perfil
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="d-grid">
+                            <a href="{{ url_for('logout') }}" class="btn btn-outline-danger">
+                                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de estadísticas -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar"></i> Estadísticas del Sistema
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4 mb-3">
+                        <div class="p-3 bg-primary text-white rounded">
+                            <i class="fas fa-users fa-2x"></i>
+                            <h4 class="mt-2">1</h4>
+                            <small>Usuario Activo</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="p-3 bg-success text-white rounded">
+                            <i class="fas fa-check-circle fa-2x"></i>
+                            <h4 class="mt-2">100%</h4>
+                            <small>Sistema Operativo</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div class="p-3 bg-info text-white rounded">
+                            <i class="fas fa-flask fa-2x"></i>
+                            <h4 class="mt-2">Flask</h4>
+                            <small>Framework</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Panel de usuario -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-cog"></i> Mi Cuenta
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="fas fa-user-circle fa-5x text-primary"></i>
+                </div>
+                <h5>{{ user.nombre }}</h5>
+                <p class="text-muted">{{ user.email }}</p>
+                <hr>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('profile') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-edit"></i> Editar Perfil
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panel de acciones rápidas -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt"></i> Acciones Rápidas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('profile') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user"></i> Ver Perfil
+                    </a>
+                    <a href="{{ url_for('index') }}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-home"></i> Ir al Inicio
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Mostrar hora actual
+function updateTime() {
+    const now = new Date();
+    document.getElementById('currentTime').textContent = now.toLocaleString('es-ES');
+}
+updateTime();
+setInterval(updateTime, 1000);
+</script>
+{% endblock %}

@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Registrarse - Mi Proyecto Flask{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white text-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-user-plus"></i> Crear Cuenta
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="registerForm">
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">
+                            <i class="fas fa-user"></i> Nombre Completo
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="nombre" 
+                               name="nombre" 
+                               required
+                               placeholder="Tu nombre completo"
+                               value="{{ request.form.nombre if request.form.nombre }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">
+                            <i class="fas fa-envelope"></i> Email
+                        </label>
+                        <input type="email" 
+                               class="form-control" 
+                               id="email" 
+                               name="email" 
+                               required
+                               placeholder="tu@email.com"
+                               value="{{ request.form.email if request.form.email }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">
+                            <i class="fas fa-lock"></i> Contraseña
+                        </label>
+                        <input type="password" 
+                               class="form-control" 
+                               id="password" 
+                               name="password" 
+                               required
+                               minlength="6"
+                               placeholder="Mínimo 6 caracteres">
+                        <div class="form-text">
+                            La contraseña debe tener al menos 6 caracteres.
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">
+                            <i class="fas fa-lock"></i> Confirmar Contraseña
+                        </label>
+                        <input type="password" 
+                               class="form-control" 
+                               id="confirm_password" 
+                               name="confirm_password" 
+                               required
+                               placeholder="Repite tu contraseña">
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-user-plus"></i> Crear Cuenta
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <small class="text-muted">
+                    ¿Ya tienes una cuenta? 
+                    <a href="{{ url_for('login') }}" class="text-decoration-none">
+                        Inicia sesión aquí
+                    </a>
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Validación de contraseñas en el frontend
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirm_password').value;
+    
+    if (password !== confirmPassword) {
+        e.preventDefault();
+        alert('Las contraseñas no coinciden. Por favor, verifica.');
+        document.getElementById('confirm_password').focus();
+    }
+});
+
+// Validación en tiempo real
+document.getElementById('confirm_password').addEventListener('input', function() {
+    const password = document.getElementById('password').value;
+    const confirmPassword = this.value;
+    
+    if (password !== confirmPassword) {
+        this.setCustomValidity('Las contraseñas no coinciden');
+    } else {
+        this.setCustomValidity('');
+    }
+});
+</script>
+{% endblock %}

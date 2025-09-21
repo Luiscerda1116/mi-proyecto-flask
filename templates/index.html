@@ -1,176 +1,104 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Gestión</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .nav {
-            background-color: white;
-            padding: 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-        
-        .nav a {
-            color: #667eea;
-            text-decoration: none;
-            margin-right: 20px;
-            font-weight: bold;
-            padding: 8px 16px;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        
-        .nav a:hover {
-            background-color: #667eea;
-            color: white;
-        }
-        
-        .card {
-            background-color: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        
-        .btn {
-            background-color: #667eea;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            margin: 5px;
-            transition: background-color 0.3s;
-        }
-        
-        .btn:hover {
-            background-color: #5a67d8;
-        }
-        
-        .btn-success {
-            background-color: #48bb78;
-        }
-        
-        .btn-success:hover {
-            background-color: #38a169;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        th {
-            background-color: #667eea;
-            color: white;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        
-        input[type="text"], input[type="email"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-        
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-        
-        .alert-success {
-            background-color: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #155724;
-        }
-        
-        .alert-error {
-            background-color: #f8d7da;
-            border: 1px solid #f5c6cb;
-            color: #721c24;
-        }
-    </style>
-</head>
-<body>
-    <!-- PÁGINA PRINCIPAL - index.html -->
-    <div class="header">
-        <h1>🚀 Sistema de Gestión MySQL</h1>
-        <p>Aplicación Flask con Base de Datos MySQL</p>
+{% extends "base.html" %}
+
+{% block title %}Inicio - Mi Proyecto Flask{% endblock %}
+
+{% block content %}
+<div class="jumbotron bg-light p-5 rounded">
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="display-4">
+                <i class="fas fa-flask text-primary"></i> 
+                ¡Bienvenido a Mi Proyecto Flask!
+            </h1>
+            <p class="lead">
+                Este es un sistema web completo desarrollado con Flask, que incluye 
+                autenticación de usuarios, conexión a MySQL y un diseño responsivo.
+            </p>
+            
+            {% if current_user.is_authenticated %}
+                <hr class="my-4">
+                <p class="mb-4">
+                    <i class="fas fa-user-check text-success"></i>
+                    Hola <strong>{{ current_user.nombre }}</strong>, has iniciado sesión correctamente.
+                </p>
+                <a class="btn btn-primary btn-lg" href="{{ url_for('dashboard') }}" role="button">
+                    <i class="fas fa-tachometer-alt"></i> Ir al Dashboard
+                </a>
+                <a class="btn btn-outline-secondary btn-lg ms-2" href="{{ url_for('profile') }}" role="button">
+                    <i class="fas fa-user"></i> Ver Perfil
+                </a>
+            {% else %}
+                <hr class="my-4">
+                <p class="mb-4">
+                    Para acceder a todas las funcionalidades, por favor inicia sesión o regístrate.
+                </p>
+                <a class="btn btn-success btn-lg" href="{{ url_for('register') }}" role="button">
+                    <i class="fas fa-user-plus"></i> Registrarse
+                </a>
+                <a class="btn btn-primary btn-lg ms-2" href="{{ url_for('login') }}" role="button">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </a>
+            {% endif %}
+        </div>
+        <div class="col-md-4">
+            <div class="text-center">
+                <i class="fas fa-cogs fa-8x text-primary opacity-75"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Autenticación Segura</h5>
+                <p class="card-text">
+                    Sistema de login robusto con hash de contraseñas y 
+                    protección de rutas privadas.
+                </p>
+            </div>
+        </div>
     </div>
     
-    <div class="nav">
-        <a href="/">🏠 Inicio</a>
-        <a href="/usuarios">👥 Usuarios</a>
-        <a href="/nuevo_usuario">➕ Nuevo Usuario</a>
-        <a href="/test_db">🔧 Test DB</a>
-        <a href="/api/usuarios">📊 API Usuarios</a>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-database fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Base de Datos MySQL</h5>
+                <p class="card-text">
+                    Integración completa con MySQL para almacenar 
+                    usuarios y datos de la aplicación.
+                </p>
+            </div>
+        </div>
     </div>
     
-    <div class="card">
-        <h2>¡Bienvenido al Sistema!</h2>
-        <p>Esta aplicación demuestra la integración entre Flask y MySQL.</p>
-        
-        <h3>📋 Características:</h3>
-        <ul>
-            <li>✅ Conexión a MySQL configurada</li>
-            <li>✅ CRUD de usuarios completo</li>
-            <li>✅ API REST endpoints</li>
-            <li>✅ Templates HTML responsivos</li>
-            <li>✅ Prueba de conexión a BD</li>
-        </ul>
-        
-        <h3>🛠️ Acciones rápidas:</h3>
-        <a href="/usuarios" class="btn">Ver Usuarios</a>
-        <a href="/nuevo_usuario" class="btn btn-success">Crear Usuario</a>
-        <a href="/test_db" class="btn">Probar Conexión</a>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-mobile-alt fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">Diseño Responsivo</h5>
+                <p class="card-text">
+                    Interfaz moderna y responsiva que se adapta 
+                    a cualquier dispositivo.
+                </p>
+            </div>
+        </div>
     </div>
-    
-    <div class="card">
-        <h3>📊 Estado del Sistema</h3>
-        <p><strong>Base de Datos:</strong> MySQL conectada ✅</p>
-        <p><strong>Framework:</strong> Flask 🐍</p>
-        <p><strong>Estado:</strong> Funcionando correctamente 🚀</p>
+</div>
+
+{% if not current_user.is_authenticated %}
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="alert alert-info" role="alert">
+            <i class="fas fa-info-circle"></i>
+            <strong>¿Primera vez aquí?</strong> 
+            Regístrate para acceder a todas las funcionalidades del sistema.
+            Es rápido y gratuito.
+        </div>
     </div>
-</body>
-</html>
+</div>
+{% endif %}
+{% endblock %}

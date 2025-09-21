@@ -1,127 +1,86 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
-import sys
-import os
-
-# Agregar la carpeta Conexion al path para importar el módulo
-sys.path.append(os.path.join(os.path.dirname(__file__), 'Conexion'))
-
-try:
-    from conexion import db
-except ImportError:
-    print("Error: No se pudo importar el módulo de conexión")
-    db = None
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash
+from config import Config
+from models import User
 
 app = Flask(__name__)
-app.secret_key = 'tu_clave_secreta_aqui'  # Cambia por una clave segura
+app.config.from_object(Config)
+
+# Configurar Flask-Login
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+login_manager.login_message = 'Por favor inicia sesión para acceder a esta página.'
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get_by_id(user_id)
 
 # Ruta principal
 @app.route('/')
 def index():
-    """Página principal del proyecto"""
     return render_template('index.html')
 
-# Ruta para probar la conexión a MySQL (requerida por la tarea)
-@app.route('/test_db')
-def test_database():
-    """Prueba la conexión con MySQL"""
-    if db is None:
-        return "Error: Módulo de conexión no disponible"
-    
-    result = db.test_connection()
-    return f"<h1>Prueba de Conexión MySQL</h1><p>{result}</p>"
-
-# Rutas para gestión de usuarios
-@app.route('/usuarios')
-def listar_usuarios():
-    """Muestra todos los usuarios"""
-    if db is None:
-        return "Error: Base de datos no disponible"
-    
-    usuarios = db.fetch_query("SELECT * FROM usuarios WHERE activo = TRUE ORDER BY fecha_registro DESC")
-    
-    if usuarios is None:
-        flash('Error al obtener usuarios', 'error')
-        return redirect(url_for('index'))
-    
-    return render_template('usuarios.html', usuarios=usuarios)
-
-@app.route('/usuarios/nuevo', methods=['GET', 'POST'])
-def nuevo_usuario():
-    """Crear un nuevo usuario"""
+# Ruta de login
+@app.route('/login', methods=['GET', 'POST'])
+def login():
     if request.method == 'POST':
-        nombre = request.form.get('nombre')
-        email = request.form.get('email')
+        email = request.form['email']
+        password = request.form['password']
         
-        if not nombre or not email:
-            flash('Nombre y email son obligatorios', 'error')
-            return render_template('nuevo_usuario.html')
+        user = User.get_by_email(email)
         
-        # Insertar usuario en la base de datos
-        query = "INSERT INTO usuarios (nombre, email) VALUES (%s, %s)"
-        if db.execute_query(query, (nombre, email)):
-            flash('Usuario creado exitosamente', 'success')
-            return redirect(url_for('listar_usuarios'))
+        if user and user.check_password(password):
+            login_user(user)
+            flash('¡Bienvenido! Has iniciado sesión correctamente.', 'success')
+            return redirect(url_for('dashboard'))
         else:
-            flash('Error al crear usuario', 'error')
+            flash('Email o contraseña incorrectos.', 'error')
     
-    return render_template('nuevo_usuario.html')
+    return render_template('login.html')
 
-# Rutas para productos (ejemplo adicional)
-@app.route('/productos')
-def listar_productos():
-    """Muestra todos los productos con sus categorías"""
-    if db is None:
-        return "Error: Base de datos no disponible"
+# Ruta de registro
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        email = request.form['email']
+        password = request.form['password']
+        
+        # Verificar si el usuario ya existe
+        if User.get_by_email(email):
+            flash('El email ya está registrado.', 'error')
+            return redirect(url_for('register'))
+        
+        # Crear nuevo usuario
+        if User.create_user(nombre, email, password):
+            flash('¡Registro exitoso! Ahora puedes iniciar sesión.', 'success')
+            return redirect(url_for('login'))
+        else:
+            flash('Error al crear el usuario.', 'error')
     
-    query = """
-    SELECT p.*, c.nombre_categoria 
-    FROM productos p 
-    LEFT JOIN categorias c ON p.id_categoria = c.id_categoria 
-    ORDER BY p.fecha_creacion DESC
-    """
-    productos = db.fetch_query(query)
-    
-    if productos is None:
-        flash('Error al obtener productos', 'error')
-        return redirect(url_for('index'))
-    
-    return render_template('productos.html', productos=productos)
+    return render_template('register.html')
 
-# API endpoints
-@app.route('/api/usuarios')
-def api_usuarios():
-    """API para obtener usuarios en formato JSON"""
-    usuarios = db.fetch_query("SELECT id_usuario, nombre, email FROM usuarios WHERE activo = TRUE")
-    return jsonify(usuarios if usuarios else [])
+# Ruta protegida - Dashboard
+@app.route('/dashboard')
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
 
-@app.route('/api/productos')
-def api_productos():
-    """API para obtener productos en formato JSON"""
-    productos = db.fetch_query("SELECT * FROM productos")
-    return jsonify(productos if productos else [])
+# Ruta protegida - Perfil
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html')
 
-# Ruta para estadísticas
-@app.route('/estadisticas')
-def estadisticas():
-    """Muestra estadísticas del sistema"""
-    if db is None:
-        return "Error: Base de datos no disponible"
-    
-    stats = {}
-    
-    # Contar usuarios
-    result = db.fetch_query("SELECT COUNT(*) as total FROM usuarios WHERE activo = TRUE")
-    stats['usuarios'] = result[0]['total'] if result else 0
-    
-    # Contar productos
-    result = db.fetch_query("SELECT COUNT(*) as total FROM productos")
-    stats['productos'] = result[0]['total'] if result else 0
-    
-    # Contar categorías
-    result = db.fetch_query("SELECT COUNT(*) as total FROM categorias")
-    stats['categorias'] = result[0]['total'] if result else 0
-    
-    return render_template('estadisticas.html', stats=stats)
+# Ruta de logout
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('Has cerrado sesión correctamente.', 'info')
+    return redirect(url_for('index'))
 
 # Manejo de errores
 @app.errorhandler(404)
@@ -133,12 +92,7 @@ def internal_error(error):
     return render_template('500.html'), 500
 
 if __name__ == '__main__':
-    print("Iniciando aplicación Flask con MySQL...")
-    print("Rutas disponibles:")
-    print("- http://localhost:5000/ (Página principal)")
-    print("- http://localhost:5000/test_db (Prueba de conexión)")
-    print("- http://localhost:5000/usuarios (Lista de usuarios)")
-    print("- http://localhost:5000/productos (Lista de productos)")
-    print("- http://localhost:5000/estadisticas (Estadísticas)")
-    
-    app.run(debug=True, port=5000)
+    print("🚀 Iniciando aplicación Flask...")
+    print("📱 Accede a: http://127.0.0.1:5000")
+    print("🔑 Usuario de prueba: crear uno en /register")
+    app.run(debug=True)

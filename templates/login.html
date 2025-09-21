@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar Sesión - Mi Proyecto Flask{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">
+                            <i class="fas fa-envelope"></i> Email
+                        </label>
+                        <input type="email" 
+                               class="form-control" 
+                               id="email" 
+                               name="email" 
+                               required
+                               placeholder="tu@email.com"
+                               value="{{ request.form.email if request.form.email }}">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">
+                            <i class="fas fa-lock"></i> Contraseña
+                        </label>
+                        <input type="password" 
+                               class="form-control" 
+                               id="password" 
+                               name="password" 
+                               required
+                               placeholder="Tu contraseña">
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <small class="text-muted">
+                    ¿No tienes una cuenta? 
+                    <a href="{{ url_for('register') }}" class="text-decoration-none">
+                        Regístrate aquí
+                    </a>
+                </small>
+            </div>
+        </div>
+        
+        <!-- Información de usuario demo (opcional) -->
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6 class="card-title">
+                    <i class="fas fa-info-circle text-info"></i> Usuario de Prueba
+                </h6>
+                <p class="card-text small">
+                    <strong>Email:</strong> admin@example.com<br>
+                    <strong>Contraseña:</strong> 123456
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
