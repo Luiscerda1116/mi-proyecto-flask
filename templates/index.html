@@ -1,104 +1,110 @@
 {% extends "base.html" %}
 
-{% block title %}Inicio - Mi Proyecto Flask{% endblock %}
+{% block title %}Inicio - Sistema de Gestión de Productos{% endblock %}
 
 {% block content %}
-<div class="jumbotron bg-light p-5 rounded">
-    <div class="row">
-        <div class="col-md-8">
-            <h1 class="display-4">
-                <i class="fas fa-flask text-primary"></i> 
-                ¡Bienvenido a Mi Proyecto Flask!
-            </h1>
-            <p class="lead">
-                Este es un sistema web completo desarrollado con Flask, que incluye 
-                autenticación de usuarios, conexión a MySQL y un diseño responsivo.
-            </p>
-            
-            {% if current_user.is_authenticated %}
-                <hr class="my-4">
-                <p class="mb-4">
-                    <i class="fas fa-user-check text-success"></i>
-                    Hola <strong>{{ current_user.nombre }}</strong>, has iniciado sesión correctamente.
+<div class="row">
+    <div class="col-12">
+        <div class="jumbotron bg-primary text-white rounded p-5 mb-4">
+            <div class="container-fluid py-5">
+                <h1 class="display-4 fw-bold">
+                    <i class="bi bi-shop"></i> Sistema de Gestión de Productos
+                </h1>
+                <p class="col-md-8 fs-4">
+                    Administra tu inventario de productos de manera fácil y eficiente. 
+                    Crea, edita, consulta y elimina productos con una interfaz moderna y intuitiva.
                 </p>
-                <a class="btn btn-primary btn-lg" href="{{ url_for('dashboard') }}" role="button">
-                    <i class="fas fa-tachometer-alt"></i> Ir al Dashboard
-                </a>
-                <a class="btn btn-outline-secondary btn-lg ms-2" href="{{ url_for('profile') }}" role="button">
-                    <i class="fas fa-user"></i> Ver Perfil
-                </a>
-            {% else %}
-                <hr class="my-4">
-                <p class="mb-4">
-                    Para acceder a todas las funcionalidades, por favor inicia sesión o regístrate.
-                </p>
-                <a class="btn btn-success btn-lg" href="{{ url_for('register') }}" role="button">
-                    <i class="fas fa-user-plus"></i> Registrarse
-                </a>
-                <a class="btn btn-primary btn-lg ms-2" href="{{ url_for('login') }}" role="button">
-                    <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
-                </a>
-            {% endif %}
-        </div>
-        <div class="col-md-4">
-            <div class="text-center">
-                <i class="fas fa-cogs fa-8x text-primary opacity-75"></i>
+                <div class="mt-4">
+                    <a class="btn btn-light btn-lg me-3" href="{{ url_for('listar_productos') }}" role="button">
+                        <i class="bi bi-list-ul"></i> Ver Productos
+                    </a>
+                    <a class="btn btn-outline-light btn-lg" href="{{ url_for('mostrar_crear') }}" role="button">
+                        <i class="bi bi-plus-circle"></i> Agregar Producto
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row mt-5">
+<div class="row">
     <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
-                <h5 class="card-title">Autenticación Segura</h5>
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <div class="text-primary mb-3">
+                    <i class="bi bi-plus-circle display-3"></i>
+                </div>
+                <h5 class="card-title">Crear Productos</h5>
                 <p class="card-text">
-                    Sistema de login robusto con hash de contraseñas y 
-                    protección de rutas privadas.
+                    Agrega nuevos productos a tu inventario con información detallada como nombre, precio y stock.
                 </p>
+                <a href="{{ url_for('mostrar_crear') }}" class="btn btn-primary">
+                    <i class="bi bi-plus"></i> Crear Producto
+                </a>
             </div>
         </div>
     </div>
     
     <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="fas fa-database fa-3x text-success mb-3"></i>
-                <h5 class="card-title">Base de Datos MySQL</h5>
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <div class="text-success mb-3">
+                    <i class="bi bi-list-ul display-3"></i>
+                </div>
+                <h5 class="card-title">Gestionar Inventario</h5>
                 <p class="card-text">
-                    Integración completa con MySQL para almacenar 
-                    usuarios y datos de la aplicación.
+                    Consulta, edita y administra todos tus productos desde una interfaz organizada y fácil de usar.
                 </p>
+                <a href="{{ url_for('listar_productos') }}" class="btn btn-success">
+                    <i class="bi bi-eye"></i> Ver Productos
+                </a>
             </div>
         </div>
     </div>
     
     <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="fas fa-mobile-alt fa-3x text-warning mb-3"></i>
-                <h5 class="card-title">Diseño Responsivo</h5>
+        <div class="card text-center h-100">
+            <div class="card-body">
+                <div class="text-info mb-3">
+                    <i class="bi bi-graph-up display-3"></i>
+                </div>
+                <h5 class="card-title">Control Total</h5>
                 <p class="card-text">
-                    Interfaz moderna y responsiva que se adapta 
-                    a cualquier dispositivo.
+                    Mantén el control completo de tu inventario con operaciones CRUD completas y validaciones.
                 </p>
+                <a href="{{ url_for('listar_productos') }}" class="btn btn-info">
+                    <i class="bi bi-gear"></i> Administrar
+                </a>
             </div>
         </div>
     </div>
 </div>
 
-{% if not current_user.is_authenticated %}
 <div class="row mt-5">
     <div class="col-12">
-        <div class="alert alert-info" role="alert">
-            <i class="fas fa-info-circle"></i>
-            <strong>¿Primera vez aquí?</strong> 
-            Regístrate para acceder a todas las funcionalidades del sistema.
-            Es rápido y gratuito.
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-info-circle"></i> Características del Sistema
+                </h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> <strong>CRUD Completo:</strong> Crear, leer, actualizar y eliminar productos</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> <strong>Base de Datos MySQL:</strong> Almacenamiento seguro y confiable</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> <strong>Validaciones:</strong> Datos seguros y consistentes</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> <strong>Interfaz Moderna:</strong> Diseño responsivo con Bootstrap</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> <strong>Fácil de Usar:</strong> Navegación intuitiva</li>
+                            <li class="mb-2"><i class="bi bi-check-circle text-success"></i> <strong>Confirmaciones:</strong> Evita eliminaciones accidentales</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-{% endif %}
 {% endblock %}

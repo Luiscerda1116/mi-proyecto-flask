@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Eliminar Producto - Sistema de Gestión{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-exclamation-triangle"></i> Confirmar Eliminación
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="bi bi-warning-triangle"></i>
+                    <strong>¡Atención!</strong> Esta acción no se puede deshacer.
+                </div>
+
+                <p class="lead">¿Estás seguro de que deseas eliminar el siguiente producto?</p>
+                
+                <!-- Información del producto a eliminar -->
+                <div class="card bg-light mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <h5 class="text-primary">
+                                    <i class="bi bi-tag"></i> {{ producto.nombre }}
+                                </h5>
+                                <p class="mb-1">
+                                    <strong>ID del Producto:</strong> #{{ producto.id_producto }}
+                                </p>
+                                {% if producto.fecha_creacion %}
+                                <p class="mb-0 text-muted">
+                                    <small>
+                                        <i class="bi bi-calendar"></i>
+                                        Creado el {{ producto.fecha_creacion.strftime('%d/%m/%Y a las %H:%M') }}
+                                    </small>
+                                </p>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <h4 class="text-success mb-2">
+                                    <i class="bi bi-currency-dollar"></i>
+                                    ${{ "%.2f"|format(producto.precio) }}
+                                </h4>
+                                <div class="mb-2">
+                                    {% if producto.stock > 10 %}
+                                        <span class="badge bg-success fs-6">
+                                            <i class="bi bi-check-circle"></i>
+                                            {{ producto.stock }} en stock
+                                        </span>
+                                    {% elif producto.stock > 0 %}
+                                        <span class="badge bg-warning fs-6">
+                                            <i class="bi bi-exclamation-triangle"></i>
+                                            {{ producto.stock }} en stock
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-danger fs-6">
+                                            <i class="bi bi-x-circle"></i>
+                                            Agotado
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advertencias específicas -->
+                {% if producto.stock > 0 %}
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    <strong>Nota:</strong> Este producto tiene {{ producto.stock }} unidades en stock. 
+                    Al eliminarlo, también se eliminará todo el inventario asociado.
+                </div>
+                {% endif %}
+
+                <!-- Consecuencias de la eliminación -->
+                <div class="card border-warning mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h6 class="mb-0">
+                            <i class="bi bi-list-check"></i> Consecuencias de esta acción:
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <ul class="mb-0">
+                            <li>El producto será eliminado permanentemente de la base de datos</li>
+                            <li>Se perderá toda la información asociada al producto</li>
+                            {% if producto.stock > 0 %}
+                            <li class="text-warning">
+                                <strong>Se eliminará el inventario de {{ producto.stock }} unidades</strong>
+                            </li>
+                            {% endif %}
+                            <li>Esta acción <strong>NO se puede deshacer</strong></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Botones de acción -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <a href="{{ url_for('listar_productos') }}" class="btn btn-success btn-lg me-md-3">
+                        <i class="bi bi-arrow-left"></i> No, Mantener Producto
+                    </a>
+                    
+                    <form method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-danger btn-lg" id="btnEliminar">
+                            <i class="bi bi-trash"></i> Sí, Eliminar Producto
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Texto adicional -->
+                <div class="text-center mt-4">
+                    <small class="text-muted">
+                        Si no estás seguro, puedes regresar a la lista y editar el producto en su lugar.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación adicional (opcional) -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle"></i> Confirmación Final
+                </h5>
+            </div>
+            <div class="modal-body text-center">
+                <p class="mb-3">¿Realmente deseas eliminar el producto?</p>
+                <h6 class="text-primary">"{{ producto.nombre }}"</h6>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">
+                    Eliminar Definitivamente
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnEliminar = document.getElementById('btnEliminar');
+        const form = btnEliminar.closest('form');
+        const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+        const confirmDelete = document.getElementById('confirmDelete');
+
+        // Interceptar el click del botón eliminar
+        btnEliminar.addEventListener('click', function(e) {
+            e.preventDefault();
+            confirmModal.show();
+        });
+
+        // Confirmar eliminación desde el modal
+        confirmDelete.addEventListener('click', function() {
+            confirmModal.hide();
+            
+            // Deshabilitar botón para evitar clicks múltiples
+            btnEliminar.innerHTML = '<i class="bi bi-hourglass-split"></i> Eliminando...';
+            btnEliminar.disabled = true;
+            
+            // Enviar formulario
+            setTimeout(() => {
+                form.submit();
+            }, 500);
+        });
+
+        // Efecto de hover en el botón de eliminar
+        btnEliminar.addEventListener('mouseenter', function() {
+            if (!this.disabled) {
+                this.innerHTML = '<i class="bi bi-trash-fill"></i> Confirmar Eliminación';
+            }
+        });
+
+        btnEliminar.addEventListener('mouseleave', function() {
+            if (!this.disabled) {
+                this.innerHTML = '<i class="bi bi-trash"></i> Sí, Eliminar Producto';
+            }
+        });
+    });
+</script>
+{% endblock %}

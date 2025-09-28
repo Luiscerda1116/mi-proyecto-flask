@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Crear Producto - Sistema de Gestión{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-plus-circle"></i> Crear Nuevo Producto
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" novalidate>
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">
+                            <i class="bi bi-tag"></i> Nombre del Producto *
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="nombre" 
+                               name="nombre" 
+                               value="{{ request.form.nombre if request.form.nombre }}"
+                               required 
+                               placeholder="Ej: Laptop Dell XPS 13"
+                               maxlength="255">
+                        <div class="form-text">Ingresa un nombre descriptivo para el producto.</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="precio" class="form-label">
+                                    <i class="bi bi-currency-dollar"></i> Precio *
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           id="precio" 
+                                           name="precio" 
+                                           value="{{ request.form.precio if request.form.precio }}"
+                                           step="0.01" 
+                                           min="0.01" 
+                                           required 
+                                           placeholder="0.00">
+                                </div>
+                                <div class="form-text">Precio en dólares (ej: 299.99).</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="stock" class="form-label">
+                                    <i class="bi bi-boxes"></i> Stock Inicial *
+                                </label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="stock" 
+                                       name="stock" 
+                                       value="{{ request.form.stock if request.form.stock }}"
+                                       min="0" 
+                                       required 
+                                       placeholder="0">
+                                <div class="form-text">Cantidad disponible en inventario.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Nota:</strong> Todos los campos marcados con (*) son obligatorios.
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('listar_productos') }}" class="btn btn-secondary me-md-2">
+                            <i class="bi bi-arrow-left"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Crear Producto
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vista previa (opcional) -->
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8">
+        <div class="card" id="preview-card" style="display: none;">
+            <div class="card-header bg-light">
+                <h6 class="mb-0">
+                    <i class="bi bi-eye"></i> Vista Previa
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h5 id="preview-nombre" class="text-primary"></h5>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <h5 id="preview-precio" class="text-success"></h5>
+                        <small id="preview-stock" class="text-muted"></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Vista previa en tiempo real
+    const nombreInput = document.getElementById('nombre');
+    const precioInput = document.getElementById('precio');
+    const stockInput = document.getElementById('stock');
+    const previewCard = document.getElementById('preview-card');
+    const previewNombre = document.getElementById('preview-nombre');
+    const previewPrecio = document.getElementById('preview-precio');
+    const previewStock = document.getElementById('preview-stock');
+
+    function updatePreview() {
+        const nombre = nombreInput.value.trim();
+        const precio = parseFloat(precioInput.value);
+        const stock = parseInt(stockInput.value);
+
+        if (nombre || precio || stock) {
+            previewCard.style.display = 'block';
+            previewNombre.textContent = nombre || 'Nombre del producto';
+            previewPrecio.textContent = precio ? `$${precio.toFixed(2)}` : '$0.00';
+            previewStock.textContent = stock >= 0 ? `${stock} unidades en stock` : '0 unidades en stock';
+        } else {
+            previewCard.style.display = 'none';
+        }
+    }
+
+    nombreInput.addEventListener('input', updatePreview);
+    precioInput.addEventListener('input', updatePreview);
+    stockInput.addEventListener('input', updatePreview);
+
+    // Validación del formulario
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const nombre = nombreInput.value.trim();
+        const precio = parseFloat(precioInput.value);
+        const stock = parseInt(stockInput.value);
+
+        if (!nombre) {
+            e.preventDefault();
+            nombreInput.focus();
+            nombreInput.classList.add('is-invalid');
+            return;
+        }
+
+        if (!precio || precio <= 0) {
+            e.preventDefault();
+            precioInput.focus();
+            precioInput.classList.add('is-invalid');
+            return;
+        }
+
+        if (stock < 0) {
+            e.preventDefault();
+            stockInput.focus();
+            stockInput.classList.add('is-invalid');
+            return;
+        }
+    });
+
+    // Remover clases de error cuando el usuario corrige
+    [nombreInput, precioInput, stockInput].forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+    });
+</script>
+{% endblock %}
