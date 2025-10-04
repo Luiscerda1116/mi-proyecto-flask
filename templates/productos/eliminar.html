@@ -30,14 +30,6 @@
                                 <p class="mb-1">
                                     <strong>ID del Producto:</strong> #{{ producto.id_producto }}
                                 </p>
-                                {% if producto.fecha_creacion %}
-                                <p class="mb-0 text-muted">
-                                    <small>
-                                        <i class="bi bi-calendar"></i>
-                                        Creado el {{ producto.fecha_creacion.strftime('%d/%m/%Y a las %H:%M') }}
-                                    </small>
-                                </p>
-                                {% endif %}
                             </div>
                             <div class="col-md-4 text-end">
                                 <h4 class="text-success mb-2">
@@ -121,7 +113,7 @@
     </div>
 </div>
 
-<!-- Modal de confirmación adicional (opcional) -->
+<!-- Modal de confirmación adicional -->
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">

@@ -68,15 +68,12 @@
                         </div>
                     </div>
 
-                    <!-- Información adicional -->
+                    <!-- Información adicional - SIN FECHAS -->
                     <div class="alert alert-info">
                         <i class="bi bi-info-circle"></i>
                         <strong>Información:</strong> 
-                        Estás editando el producto creado el 
-                        {{ producto.fecha_creacion.strftime('%d/%m/%Y a las %H:%M') if producto.fecha_creacion else 'fecha desconocida' }}.
-                        {% if producto.fecha_actualizacion and producto.fecha_actualizacion != producto.fecha_creacion %}
-                        Última actualización: {{ producto.fecha_actualizacion.strftime('%d/%m/%Y a las %H:%M') }}.
-                        {% endif %}
+                        Estás editando el producto <strong>{{ producto.nombre }}</strong>.
+                        Verifica que los datos sean correctos antes de actualizar.
                     </div>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
